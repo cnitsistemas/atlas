@@ -22,18 +22,22 @@ export const createPdf = async (data: any): Promise<Buffer> => {
   const docDefinition: TDocumentDefinitions = {
     content: [
       {
+        image: 'src/assets/logotipo-tecnogatt.png',
+        width: 140
+      },
+      {
         alignment: 'justify',
         columns: [
           { text: `Relatório de rotas`, style: 'header' },
           {
-            text: `Data e horário da emissão: ${moment(new Date()).format("DD-MM-YYYY HH:mm:ss")}`
+            text: `Data e horário da emissão: ${moment(new Date()).format("DD/MM/YYYY HH:mm:ss")}`,
+            style: 'date'
           }
         ]
       },
-      'You can declare how many rows should be treated as a header. Headers are automatically repeated on the following pages',
-      { text: ['It is also possible to set keepWithHeaderRows to make sure there will be no page-break between the header and these rows. Take a look at the document-definition and play with it. If you set it to one, the following table will automatically start on the next page, since there\'s not enough space for the first row to be rendered here'], color: 'gray', italics: true },
+      { text: ['Relatório de rotas responsável por disponibilizar dados como descrição, escola, horário e tipo. É importante lembrar que o relatório só fica disponível enquanto é visualizado no navegador, após isso, é necessário emitir um novo.'], color: 'gray', italics: true, style: 'subheader' },
       {
-        style: 'tableExample',
+        style: 'table',
         table: {
           headerRows: 1,
           widths: [220, '*', 100, '*'],
@@ -51,16 +55,20 @@ export const createPdf = async (data: any): Promise<Buffer> => {
     ],
     styles: {
       header: {
-        fontSize: 14,
-        bold: true,
-        margin: [0, 0, 0, 10],
-      },
-      subheader: {
         fontSize: 16,
         bold: true,
+        margin: [0, 20, 0, 10],
+      },
+      date: {
+        fontSize: 11,
+        margin: [0, 20, 0, 10],
+      },
+      subheader: {
+        fontSize: 11,
         margin: [0, 10, 0, 5],
       },
-      tableExample: {
+      table: {
+        fontSize: 11,
         margin: [0, 5, 0, 15],
       },
     },
