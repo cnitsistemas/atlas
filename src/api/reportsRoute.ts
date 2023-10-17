@@ -10,7 +10,7 @@ type ReportsReponse = any;
 router.get<{}, ReportsReponse>('/', async (request: Request, response: Response) => {
   try {
     const description = request?.query?.descricao
-    const school = request?.query?.escola
+    const school = ""
     const autorization = request?.rawHeaders[1]
 
     const data = await fetchReportsRoutesApi({ description: description, school: school, autorization: autorization })
