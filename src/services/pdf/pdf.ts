@@ -4,6 +4,7 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import moment from 'moment';
 
 export const createPdf = async (data: any): Promise<Buffer> => {
+  console.log(data?.data)
   const routes = data?.data
   const body = [];
 
