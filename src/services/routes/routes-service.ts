@@ -1,8 +1,8 @@
 import api from "../api";
 
-export async function fetchReportsRoutesApi({ description, autorization }:
-  { description: any, autorization: string }) {
-  const url = `api/relatorio-rota?descricao=${description}`;
+export async function fetchReportsRoutesApi({ description, school, autorization }:
+  { description: any, school: any, autorization: string }) {
+  const url = `api/relatorio-rota?descricao=${description}&escola=${school}`;
   const apiResponse = await api.get(url, {
     headers: {
       Authorization: autorization

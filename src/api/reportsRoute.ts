@@ -10,9 +10,10 @@ type ReportsReponse = any;
 router.get<{}, ReportsReponse>('/', async (request: Request, response: Response) => {
   try {
     const description = request?.query?.descricao
+    const school = request?.query?.escola
     const autorization = request?.rawHeaders[1]
 
-    const data = await fetchReportsRoutesApi({ description: description, autorization: autorization })
+    const data = await fetchReportsRoutesApi({ description: description, school: school, autorization: autorization })
 
     const binaryResult = await createPdf(data?.data);
 
