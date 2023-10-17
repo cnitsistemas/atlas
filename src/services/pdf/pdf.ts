@@ -22,10 +22,6 @@ export const createPdf = async (data: any): Promise<Buffer> => {
   const docDefinition: TDocumentDefinitions = {
     content: [
       {
-        image: 'src/assets/logotipo-tecnogatt.png',
-        width: 140
-      },
-      {
         alignment: 'justify',
         columns: [
           { text: `Relatório de rotas`, style: 'header' },
