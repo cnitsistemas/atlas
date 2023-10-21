@@ -28,7 +28,7 @@ export const createPdf = async (data: any): Promise<Buffer> => {
       {
         alignment: 'justify',
         columns: [
-          { text: `Relatório de rotas`, style: 'header' },
+          { text: `Relatório de Rotas`, style: 'header' },
           {
             text: `Data e horário da emissão: ${moment(new Date()).format("DD/MM/YYYY HH:mm:ss")}`,
             style: 'date'
