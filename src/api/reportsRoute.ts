@@ -9,11 +9,23 @@ type ReportsReponse = any;
 
 router.get<{}, ReportsReponse>('/', async (request: Request, response: Response) => {
   try {
-    const description = request?.query?.descricao
-    const school = request?.query?.escola
+    const description = request?.query?.descricao || ''
+    const school = request?.query?.escola || ''
+    const type = request?.query?.tipo || ''
+    const morning = request?.query.matutino || 'false'
+    const afternoon = request?.query?.vespertino || 'false'
+    const nocturnal = request?.query?.noturno || 'false'
     const autorization = request?.rawHeaders[1]
 
-    const data = await fetchReportsRoutesApi({ description: description, school: school, autorization: autorization })
+    const data = await fetchReportsRoutesApi({
+      description: description,
+      school: school,
+      autorization: autorization,
+      type: type,
+      morning: morning,
+      afternoon: afternoon,
+      nocturnal: nocturnal
+    })
 
     const binaryResult = await createPdf(data?.data);
 
