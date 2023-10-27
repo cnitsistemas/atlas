@@ -16,8 +16,13 @@ export const createPdf = async (data: any): Promise<Buffer> => {
       row.push(route.escolas)
       row.push(route.quantidade_alunos)
 
-      const departureTime = `${route.hora_ida_inicio} - ${route.hora_ida_termino}`
-      const returnTime = `${route.hora_volta_inicio} - ${route.hora_volta_termino}`
+      const hora_ida_inicio = route.hora_ida_inicio ? route.hora_ida_inicio : '00:00'
+      const hora_ida_termino = route.hora_ida_termino ? route.hora_ida_termino : '00:00'
+      const hora_volta_inicio = route.hora_volta_inicio ? route.hora_volta_inicio : '00:00'
+      const hora_volta_termino = route.hora_volta_termino ? route.hora_volta_termino : '00:00'
+
+      const departureTime = `${hora_ida_inicio} - ${hora_ida_termino}`
+      const returnTime = `${hora_volta_inicio} - ${hora_volta_termino}`
       row.push(departureTime)
       row.push(returnTime)
 
@@ -29,13 +34,20 @@ export const createPdf = async (data: any): Promise<Buffer> => {
     pageOrientation: 'landscape',
     content: [
       {
-        image: DEFAULT_LOGO,
-        width: 120
-      },
-      { text: `Relatório de Rotas`, style: 'header' },
-      {
-        text: `Data e horário da emissão: ${moment(new Date()).format("DD/MM/YYYY HH:mm:ss")}`,
-        style: 'date'
+        alignment: 'justify',
+        columns: [
+          {
+            image: DEFAULT_LOGO,
+            width: 120
+          },
+          [
+            { text: `Relatório de Rotas`, style: 'header' },
+            {
+              text: `Data e horário da emissão: ${moment(new Date()).format("DD/MM/YYYY HH:mm:ss")}`,
+              style: 'date'
+            },
+          ]
+        ]
       },
       { text: ['Relatório de rotas responsável por disponibilizar dados como descrição, escola, horário e tipo. É importante lembrar que o relatório só fica disponível enquanto é visualizado no navegador, após isso, é necessário emitir um novo.'], color: 'gray', italics: true, style: 'subheader' },
       {
@@ -62,10 +74,12 @@ export const createPdf = async (data: any): Promise<Buffer> => {
         fontSize: 13,
         bold: true,
         margin: [0, 20, 0, 10],
+        alignment: 'right',
       },
       date: {
         fontSize: 9,
         margin: [0, 0, 0, 0],
+        alignment: 'right',
       },
       subheader: {
         fontSize: 9,
@@ -97,5 +111,5 @@ export const createPdf = async (data: any): Promise<Buffer> => {
 };
 
 export const errorPdfHtmlTemplate = (error: string): string => `
-<h2>There was an error displaying the PDF document.</h2>
+<h2>Ocorreu um erro ao exibir o documento PDF.</h2>
 Error message: ${error}`;
