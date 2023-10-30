@@ -208,6 +208,152 @@ export const createPdf = async (data: any): Promise<Buffer> => {
   });
 };
 
+export const createFrequencyPdf = async (data: any): Promise<Buffer> => {
+  const frequencies = data?.data
+
+  const interationFrquency =
+    frequencies &&
+    frequencies.length > 0 &&
+    frequencies.map((frequency: any) => {
+      const body = [];
+
+      if (frequency.frequencias && frequency.frequencias.length > 0) {
+        for (let item of frequency.frequencias) {
+          const row = new Array();
+
+          const presente = item.presenca === 1 ? 'Presente' : 'Ausente'
+          row.push(item.aluno.nome)
+          row.push(item.aluno.nome_escola)
+          row.push(presente)
+
+          body.push(row);
+        }
+      }
+
+      return [
+        {
+          alignment: 'justify',
+          columns: [
+            [
+              {
+                text: `Data da Chamada: ${moment(frequency.data_chamada).format("DD/MM/YYYY HH:mm:ss")}`,
+                style: 'infos'
+              },
+              {
+                text: `Turno: ${frequency.turno}`,
+                style: 'infos'
+              },
+              {
+                text: `Finalizada: ${frequency.realizada === 1 ? 'Sim' : 'Não'}`,
+                style: 'infos'
+              },
+            ],
+            [
+              {
+                text: `Rota: ${frequency.route.nome}`,
+                style: 'infos'
+              },
+              {
+                text: `Sentido: ${frequency.sentido}`,
+                style: 'infos'
+              },
+              {
+                text: `Horário: ${frequency.horario}`,
+                style: 'infos'
+              },
+            ]
+          ]
+        },
+        {
+          style: 'table',
+          table: {
+            headerRows: 1,
+            widths: ['*', '*', '*'],
+            body: [
+              [
+                { text: 'Nome do Aluno', style: 'tableHeader' },
+                { text: 'Escola', style: 'tableHeader' },
+                { text: 'Presença', style: 'tableHeader' }
+              ],
+              ...body
+            ]
+          },
+          pageBreak: "after"
+        },
+      ]
+    }) || []
+  const docDefinition: TDocumentDefinitions = {
+    pageOrientation: 'landscape',
+    content: [
+      {
+        alignment: 'justify',
+        columns: [
+          {
+            image: DEFAULT_LOGO,
+            width: 120
+          },
+          [
+            { text: `Relatório de Frequência`, style: 'header' },
+            {
+              text: `Data e horário da emissão: ${moment(new Date()).format("DD/MM/YYYY HH:mm:ss")}`,
+              style: 'date'
+            },
+          ]
+        ]
+      },
+      { text: ['Relatório de rotas responsável por disponibilizar dados como descrição, escola, horário e tipo. É importante lembrar que o relatório só fica disponível enquanto é visualizado no navegador, após isso, é necessário emitir um novo.'], color: 'gray', italics: true, style: 'subheader' },
+      ...interationFrquency
+    ],
+    styles: {
+      header: {
+        fontSize: 13,
+        bold: true,
+        margin: [0, 20, 0, 10],
+        alignment: 'right',
+      },
+      date: {
+        fontSize: 9,
+        margin: [0, 0, 0, 0],
+        alignment: 'right',
+      },
+      infos: {
+        fontSize: 10,
+        margin: [0, 0, 0, 2],
+      },
+      freq: {
+        fontSize: 10,
+        margin: [0, 0, 0, 2],
+        color: 'red'
+      },
+      subheader: {
+        fontSize: 9,
+        margin: [0, 10, 0, 5],
+      },
+      tableHeader: {
+        bold: true,
+      },
+      table: {
+        fontSize: 9,
+        margin: [0, 5, 0, 15],
+      },
+    },
+  };
+
+  const printer = new PdfPrinter({ Roboto });
+  const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+  return new Promise((resolve, reject) => {
+    try {
+      const chunks: Uint8Array[] = [];
+      pdfDoc.on('data', (chunk) => chunks.push(chunk));
+      pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+      pdfDoc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const errorPdfHtmlTemplate = (error: string): string => `
 <h2>Ocorreu um erro ao exibir o documento PDF.</h2>
 Error message: ${error}`;
