@@ -2,6 +2,7 @@ import express from 'express';
 
 import MessageResponse from '../interfaces/MessageResponse';
 import reportsRoute from './reportsRoute';
+import reportsStudents from './reportsStudents';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.get<{}, MessageResponse>('/', (req, res) => {
 });
 
 router.use('/relatorios-rotas', reportsRoute);
+router.use('/relatorios-alunos', reportsStudents);
 
 export default router;

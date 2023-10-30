@@ -4,6 +4,104 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import moment from 'moment';
 import { DEFAULT_LOGO } from './img';
 
+export const createPdfStudents = async (data: any): Promise<Buffer> => {
+  const students = data?.data
+  const body = [];
+
+  if (students && students.length > 0) {
+    for await (let student of students) {
+      const row = new Array();
+      row.push(student.nome)
+      row.push(student.serie)
+      row.push(student.turno)
+      row.push(student.nome_escola)
+      row.push(student.route?.nome || student.rota_id)
+      row.push(student.endereco)
+
+      body.push(row);
+    }
+  }
+
+  const docDefinition: TDocumentDefinitions = {
+    pageOrientation: 'landscape',
+    content: [
+      {
+        alignment: 'justify',
+        columns: [
+          {
+            image: DEFAULT_LOGO,
+            width: 120
+          },
+          [
+            { text: `Relatório de Alunos`, style: 'header' },
+            {
+              text: `Data e horário da emissão: ${moment(new Date()).format("DD/MM/YYYY HH:mm:ss")}`,
+              style: 'date'
+            },
+          ]
+        ]
+      },
+      { text: ['Relatório de alunos é responsável por disponibilizar dados como nome, escola, horário e turno. É importante lembrar que o relatório só fica disponível enquanto é visualizado no navegador, após isso, é necessário emitir um novo.'], color: 'gray', italics: true, style: 'subheader' },
+      {
+        style: 'table',
+        table: {
+          headerRows: 1,
+          widths: [220, '*', 100, '*', '*', '*'],
+          body: [
+            [
+              { text: 'Nome', style: 'tableHeader' },
+              { text: 'Série', style: 'tableHeader' },
+              { text: 'Turno', style: 'tableHeader' },
+              { text: 'Escola', style: 'tableHeader' },
+              { text: 'Rota', style: 'tableHeader' },
+              { text: 'Endereço', style: 'tableHeader' },
+            ],
+            ...body
+          ]
+        }
+      },
+    ],
+    styles: {
+      header: {
+        fontSize: 13,
+        bold: true,
+        margin: [0, 20, 0, 10],
+        alignment: 'right',
+      },
+      date: {
+        fontSize: 9,
+        margin: [0, 0, 0, 0],
+        alignment: 'right',
+      },
+      subheader: {
+        fontSize: 9,
+        margin: [0, 10, 0, 5],
+      },
+      tableHeader: {
+        bold: true,
+      },
+      table: {
+        fontSize: 9,
+        margin: [0, 5, 0, 15],
+      },
+    },
+  };
+
+  const printer = new PdfPrinter({ Roboto });
+  const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+  return new Promise((resolve, reject) => {
+    try {
+      const chunks: Uint8Array[] = [];
+      pdfDoc.on('data', (chunk) => chunks.push(chunk));
+      pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+      pdfDoc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 export const createPdf = async (data: any): Promise<Buffer> => {
   const routes = data?.data
   const body = [];
